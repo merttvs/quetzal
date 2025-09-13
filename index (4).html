@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Araç Kontrol Paneli</title>
+    <style>
+        /* === CSS BÖLÜMÜ (Değişiklik yok, olduğu gibi bırakıldı) === */
+        html { height: 100%; } body { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background-color: #1e1e1e; } h1, p { color: #d0d0d0; text-align: center; } .dialog-container { position: relative; width: 1125px; height: 872px; overflow: hidden; background-color: #2b2b2b; border: 1px solid #444; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); } .dialog-container > * { position: absolute; box-sizing: border-box; } .label { display: flex; align-items: center; font-size: 12pt; color: #e0e0e0; }
+        .lcd-number { background-color: #1a1a1a; color: #39ff14; font-family: 'DS-Digital', 'Courier New', monospace; font-weight: bold; border: 2px solid #111; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; font-size: 48pt; text-shadow: 0 0 8px rgba(57, 255, 20, 0.7); } .progress-bar-container { position: absolute; border-radius: 8px; overflow: hidden; background-color: #444; border: 1px solid #111; } .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #81C784); transition: width 0.5s ease-in-out; } .progress-bar-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11pt; font-weight: bold; text-shadow: 1px 1px 2px black; } .push-button { font-size: 12pt; color: #f0f0f0; background-color: #4a4a4a; border: 1px solid #666; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; } .push-button:hover { background-color: #5a5a5a; border-color: #888; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); } .push-button:active, .push-button.active-feedback { background-color: #3a3a3a; transform: scale(0.98); } .h-line { border-top: 1px solid #444; } .v-line { border-left: 1px solid #444; } .placeholder { border: 1px dashed #555; border-radius: 10px; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.2); color: #777; font-size: 24pt; } .task-active { outline: 2px solid #2ecc71; outline-offset: 2px; box-shadow: 0 0 15px rgba(46, 204, 113, 0.7); }
+        .bottom-right-controls { position: fixed; z-index: 100; bottom: 20px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        #refreshButton { padding: 8px 15px; background-color: #c0392b; color: white; border: 1px solid #a03024; border-radius: 8px; cursor: pointer; font-size: 14pt; transition: all 0.2s ease; } #refreshButton:hover { background-color: #e74c3c; }
+        .keyboard-shortcuts { padding: 18px 25px; background-color: rgba(0, 0, 0, 0.6); border: 1px solid #555; border-radius: 12px; color: #ccc; font-size: 14pt; backdrop-filter: blur(5px); } .keyboard-shortcuts h4 { margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #555; color: #fff; font-size: 16pt; } .keyboard-shortcuts ul { margin: 0; padding: 0; list-style: none; } .keyboard-shortcuts li { margin-bottom: 8px; } .keyboard-shortcuts span { display: inline-block; width: 160px; font-weight: bold; color: #39ff14; }
+        .network-info-box { position: fixed; z-index: 99; bottom: 20px; left: 20px; padding: 10px 15px; background-color: rgba(0, 0, 0, 0.6); border: 1px solid #555; border-radius: 12px; color: #ccc; font-size: 10pt; backdrop-filter: blur(5px); } .network-info-box h4 { margin: 0 0 8px 0; padding-bottom: 5px; border-bottom: 1px solid #555; color: #fff; font-size: 11pt; } .network-info-box ul { margin: 0; padding: 0; list-style: none; } .network-info-box li { margin-bottom: 4px; display: flex; align-items: baseline; } .network-info-box li span { display: inline-block; width: 50px; font-weight: bold; color: #39ff14; } .network-info-box li code { color: #f0f0f0; }
+
+        /* YENİ: Barkod etiketinin stili büyütüldü ve hizalandı */
+        #label_14 {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            font-size: 28pt !important; /* Büyük font boyutu */
+            text-align: center;
+            line-height: 1.2;
+            word-break: break-all; /* Uzun barkodlar için kelime kırma */
+            padding: 5px; /* İç boşluk */
+        }
+    </style>
+</head>
+<body>
+    <h1>Bilim Konya - Quetzal Takımı X3 Aracı Kontrol Paneli</h1>
+    <p>TEKNOFEST 2025 Yarışması Sanayide Dijital Teknolojiler Kategorisi Bilim Konya - Quetzal Takımı X3 Aracı Kontrol Panel Ekranı</p>
+
+    <div class="dialog-container">
+        <!-- Panel İçeriği Burada -->
+        <div id="label" class="label" style="left: 350px; top: 20px; width: 191px; height: 41px;">İLERLEME YÖNÜ:</div>
+        <div id="label_2" class="label" style="left: 350px; top: 100px; width: 191px; height: 31px;">YÜK ALMA DURUMU:</div>
+        <div id="label_3" class="label" style="left: 350px; top: 140px; width: 231px; height: 21px;">YÜK BIRAKMA DURUMU:</div>
+        <div id="label_4" class="label" style="left: 520px; top: 30px; width: 55px; height: 21px;">İLERİ</div>
+        <div id="label_5" class="label" style="left: 550px; top: 110px; width: 111px; height: 16px;">OLUMSUZ</div>
+        <div id="label_6" class="label" style="left: 580px; top: 140px; width: 101px; height: 20px;">OLUMSUZ</div>
+        <div id="label_7" class="label" style="font-size: 14pt; left: 10px; top: 10px; width: 341px; height: 41px;">TOPLAM ÇALIŞMA SÜRESİ:</div>
+        <div id="label_8" class="label" style="font-size: 14pt; left: 10px; top: 600px; width: 171px; height: 31px;">Görev Durumu:</div>
+        <div id="label_9" class="label" style="font-size: 11pt; left: 60px; top: 640px; width: 191px; height: 16px;">ENGEL TESPİT EDİLDİ</div>
+        <div id="label_10" class="label" style="font-size: 10pt; left: 40px; top: 780px; width: 261px; height: 21px;">15 Saniye İçerisinde Engel Ortadan</div>
+        <div id="label_11" class="label" style="font-size: 10pt; left: 50px; top: 810px; width: 241px; height: 31px;">Kalkmazsa Araç Yay Çizecektir</div>
+        <div id="label_12" class="label" style="left: 350px; top: 190px; width: 201px; height: 16px;">BATARYA DURUMU :</div>
+        <div id="label_13" class="label" style="left: 810px; top: 10px; width: 171px; height: 16px;">Manuel Kontrol:</div>
+        <div id="label_15" class="label" style="font-size: 11pt; left: 360px; top: 280px; width: 171px; height: 16px;">ŞARJ İHTİYACI :</div>
+        <div id="label_16" class="label" style="font-size: 11pt; left: 540px; top: 276px; width: 91px; height: 20px;">OLUMSUZ</div>
+        <div id="label_17" class="label" style="left: 10px; top: 370px; width: 111px; height: 21px;">QR BİLGİSİ:</div>
+        <div id="label_19" class="label" style="font-size: 14pt; left: 360px; top: 360px; width: 91px; height: 31px;">HARİTA:</div>
+        <div id="barkodAlani" class="label" style="text-align:center; font-size:22pt; left: 20px; top: 370px; width: 290px; height: 150px;">Barkod Bekleniyor...</div>
+        <div id="label_21" class="label" style="left: 360px; top: 300px; width: 231px; height: 31px;">MİNİMUM ŞARJ LİMİTİ:</div>
+        <div id="label_22" class="label" style="left: 590px; top: 300px; width: 71px; height: 31px;">%10</div>
+        <div id="label_23" class="label" style="font-size: 10pt; left: 20px; top: 750px; width: 311px; height: 20px;">15 SANİYE BOYUNCA SESLİ UYARI VERİLECEK</div>
+        <div id="label_24" class="label" style="left: 350px; top: 70px; width: 181px; height: 16px;">HAREKET DURUMU:</div>
+        <div id="label_27" class="label" style="left: 540px; top: 70px; width: 91px; height: 16px;">OLUMLU</div>
+        <div id="label_25" class="label" style="font-size: 10pt; left: 800px; top: 250px; width: 221px; height: 16px;">ACİL DURDURMA BUTONU:</div>
+        <div id="lcdNumber" class="lcd-number" style="left: 20px; top: 70px; width: 251px; height: 111px;">0</div>
+        <div id="lcdNumber_2" class="lcd-number" style="left: 50px; top: 670px; width: 231px; height: 61px; font-size: 32pt;">0</div>
+        <div class="progress-bar-container" style="left: 350px; top: 210px; width: 221px; height: 51px;"><div class="progress-bar-fill" style="width: 24%;"></div><div class="progress-bar-text">24%</div></div>
+        <button id="pushButton_2" class="push-button" style="font-size: 11pt; left: 920px; top: 100px; width: 71px; height: 61px; background-color: #c0392b;">O</button>
+        <button id="pushButton_4" class="push-button" style="left: 920px; top: 170px; width: 71px; height: 61px;">V</button>
+        <button id="pushButton_5" class="push-button" style="left: 1000px; top: 100px; width: 71px; height: 61px;">&gt;</button>
+        <button id="pushButton_7" class="push-button" style="left: 20px; top: 240px; width: 121px; height: 51px;">GÖREVİ BAŞLAT</button>
+        <button id="pushButton_8" class="push-button" style="left: 160px; top: 240px; width: 121px; height: 51px;">GÖREVİ DURDUR</button>
+        <button id="pushButton_9" class="push-button" style="left: 920px; top: 30px; width: 71px; height: 61px;">^</button>
+        <button id="pushButton_10" class="push-button" style="left: 840px; top: 100px; width: 71px; height: 61px;">&lt;</button>
+        <button id="pushButton" class="push-button" style="left: 870px; top: 270px; width: 171px; height: 71px; background-color: #c0392b; border-color: #a03024;">DUR</button>
+        <div id="line_2" class="v-line" style="left: 330px; top: 0; width: 1px; height: 872px;"></div>
+        <div id="line" class="h-line" style="left: 340px; top: 170px; width: 451px; height: 1px;"></div>
+        <div id="line_3" class="h-line" style="left: 0; top: 590px; width: 330px; height: 1px;"></div>
+        <div id="line_4" class="h-line" style="left: 0; top: 340px; width: 1125px; height: 1px;"></div>
+        <div id="line_5" class="v-line" style="left: 780px; top: 0px; width: 1px; height: 340px;"></div>
+        <div id="line_6" class="h-line" style="left: 780px; top: 240px; width: 345px; height: 1px;"></div>
+        <div id="label_18" class="placeholder" style="left: 360px; top: 410px; width: 711px; height: 441px;">Harita</div>
+    </div>
+
+    <div id="network-info" class="network-info-box"> <h4>Ağ Bilgileri Yükleniyor...</h4> </div>
+
+    <div class="bottom-right-controls">
+        <button id="refreshButton" onclick="location.reload();">Ekranı Yenile</button>
+        <div class="keyboard-shortcuts">
+            <h4>Klavye Kısayolları</h4>
+            <ul> <li><span>Yön Tuşları</span>: Manuel Hareket</li> <li><span>M</span>: Manuel Kontrolü Aç/Kapa</li> <li><span>S</span>: Görevi Başlat</li> <li><span>F</span>: Görevi Bitir</li> <li><span>BOŞLUK</span>: Acil Durdurma</li> </ul>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // --- SAYFA YÜKLENDİĞİNDE ÇALIŞACAK FONKSİYONLAR ---
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchNetworkInfo();
+            connectSocket(); // Anlık iletişim için WebSocket'i başlat
+        });
+
+        // --- ANLIK İLETİŞİM KANALI (WEBSOCKET) ---
+        function connectSocket() {
+            const socket = io(); // Sunucuya bağlan
+            socket.on('connect', () => {
+                console.log('Sunucuyla anlık iletişim kanalı (WebSocket) kuruldu!');
+            });
+            // Sunucudan 'update_barkod' olayı gelince barkod etiketini güncelle
+            socket.on('update_barkod', (msg) => {
+                const barkodEtiketi = document.getElementById('label_14');
+                if (barkodEtiketi) {
+                    console.log(`Yeni barkod alındı: ${msg.barkod}`);
+                    barkodEtiketi.textContent = msg.barkod;
+                }
+            });
+        }
+
+        // --- Standart API Fonksiyonları (değişiklik yok) ---
+        async function fetchNetworkInfo() {
+            const infoBox = document.getElementById('network-info');
+            try {
+                const response = await fetch('/api/network_info');
+                const data = await response.json();
+                if (data.error) { throw new Error(data.error); }
+                infoBox.innerHTML = `<h4>Sunucu Ağ Bilgileri</h4><ul><li><span>IPv4:</span> <code>${data.ipv4}</code></li><li><span>Port:</span> <code>42420</code></li><li><span>IPv6:</span> <code>${data.ipv6}</code></li><li><span>MAC:</span> <code>${data.mac}</code></li></ul>`;
+            } catch (error) { infoBox.innerHTML = `<h4>Ağ Bilgileri Alınamadı</h4>`; }
+        }
+        async function sendCommand(command) {
+            try {
+                const response = await fetch('/api/komut', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ komut: command }),
+                });
+                const result = await response.json();
+                if (result.durum === 'engellendi') { alert('Manuel kontrol pasif! Lütfen önce "M" tuşu veya "O" butonu ile kontrolü devralın.'); }
+            } catch (error) { console.error('Hata:', error); }
+        }
+        async function setManualControl(isActive) {
+            try { await fetch('/api/manuel_kontrol', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ durum: isActive }), }); } catch (error) { console.error('Manuel kontrol durumu gönderilemedi:', error); }
+        }
+
+        // --- Buton ve Klavye Olay Dinleyicileri (değişiklik yok) ---
+        const taskStartButton = document.getElementById('pushButton_7'); const taskStopButton = document.getElementById('pushButton_8'); const controlButton = document.getElementById('pushButton_2'); let isManualControlActive = false;
+        function updateTaskVisuals(activeButtonId) { if (activeButtonId === 'pushButton_7') { taskStartButton.classList.add('task-active'); taskStopButton.classList.remove('task-active'); } else if (activeButtonId === 'pushButton_8') { taskStopButton.classList.add('task-active'); startButton.classList.remove('task-active'); } }
+        taskStartButton.addEventListener('click', () => { sendCommand('GOREVI_BASLAT'); updateTaskVisuals('pushButton_7'); });
+        taskStopButton.addEventListener('click', () => { sendCommand('GOREVI_DURDUR'); updateTaskVisuals('pushButton_8'); });
+        document.getElementById('pushButton').addEventListener('click', () => sendCommand('ACIL_DURDUR'));
+        controlButton.addEventListener('click', () => { isManualControlActive = !isManualControlActive; controlButton.style.backgroundColor = isManualControlActive ? '#2ecc71' : '#c0392b'; setManualControl(isManualControlActive); });
+        const directionButtonIds = ['pushButton_9', 'pushButton_4', 'pushButton_10', 'pushButton_5']; directionButtonIds.forEach(id => { document.getElementById(id).addEventListener('click', (event) => { event.preventDefault(); alert('Lütfen yönlendirme için klavyedeki ok tuşlarını kullanın.'); }); });
+        const keysPressed = new Set(); const keyToButtonId = { 's': 'pushButton_7', 'f': 'pushButton_8', ' ': 'pushButton', 'm': 'pushButton_2', 'arrowup': 'pushButton_9', 'arrowdown': 'pushButton_4', 'arrowleft': 'pushButton_10', 'arrowright': 'pushButton_5' };
+        document.addEventListener('keydown', (event) => { const key = event.key.toLowerCase(); if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return; if (keysPressed.has(key)) return; const buttonId = keyToButtonId[key]; if (buttonId) document.getElementById(buttonId)?.classList.add('active-feedback'); let commandToSend = null; switch (key) { case 's': commandToSend = 'GOREVI_BASLAT'; updateTaskVisuals('pushButton_7'); break; case 'f': commandToSend = 'GOREVI_DURDUR'; updateTaskVisuals('pushButton_8'); break; case ' ': event.preventDefault(); commandToSend = 'ACIL_DURDUR'; break; case 'm': controlButton.click(); break; case 'arrowup': case 'arrowdown': case 'arrowleft': case 'arrowright': event.preventDefault(); if (!keysPressed.has(key)) { const directionCommand = {'arrowup':'MANUEL_ILERI', 'arrowdown':'MANUEL_GERI', 'arrowleft':'MANUEL_SOL', 'arrowright':'MANUEL_SAG'}[key]; sendCommand(directionCommand); } break; } if(commandToSend) sendCommand(commandToSend); keysPressed.add(key); });
+        document.addEventListener('keyup', (event) => { const key = event.key.toLowerCase(); const buttonId = keyToButtonId[key]; if (buttonId) document.getElementById(buttonId)?.classList.remove('active-feedback'); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) sendCommand('MANUEL_DUR'); keysPressed.delete(key); });
+    </script>
+<script>
+function 
+
+
+
+Getir() {
+    // Önce alanı temizle
+    document.getElementById('barkodAlani').innerText = "";
+
+    fetch('/api/barkod')
+        .then(r => r.json())
+        .then(data => {
+            if (data.barkod) {
+                document.getElementById('barkodAlani').innerText = data.barkod;
+            } else {
+                document.getElementById('barkodAlani').innerText = "Henüz barkod okunmadı";
+            }
+        })
+        .catch(() => {
+            document.getElementById('barkodAlani').innerText = "Bağlantı hatası";
+        });
+}
+
+</script>
+
+
+<script>
+function barkodGetir() {
+    
+    fetch('/api/barkod')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('barkodAlani').innerText = "";
+            document.getElementById('barkodAlani').innerText = data.barkod || "Henüz barkod okunmadı";
+        });
+}
+setInterval(barkodGetir, 1000); // Her 1 sn'de bir güncelle
+</script>
+</body>
+</html>
