@@ -27,10 +27,14 @@ logging.basicConfig(
     ]
 )
 
+
 # --- SERİ PORT AYARLARI ---
-SERIAL_PORT = '/dev/ttyUSB0' 
+# SERIAL_PORT = '/dev/ttyUSB0'
+SERIAL_PORT = '/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_04bbd5fec287ed119552970ca703910e-if00-port0'
 BAUD_RATE = 115200
-BARKOD_SERIAL_PORT = '/dev/ttyACM0'  # GM65 hangi porta takılıysa değiştir
+
+# BARKOD_SERIAL_PORT = '/dev/ttyACM0'  # GM67 hangi porta takılıysa değiştir
+BARKOD_SERIAL_PORT = '/dev/serial/by-id/usb-BF_SCAN_SCAN_CDC_A-00000-if00'  # GM67 hangi porta takılıysa değiştir
 BARKOD_BAUD_RATE = 9600
 
 barkod_verisi = ""
